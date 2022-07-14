@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 ////////////////////////////////////////////////////////////////////////////////
 // Show Cart Slice
-const initialCartState = { cartIsVisible: false };
+const initialCartState = { cartIsVisible: false, notification: null };
 
 const uiSlice = createSlice({
   name: 'ui',
@@ -10,6 +10,13 @@ const uiSlice = createSlice({
   reducers: {
     toggle(state) {
       state.cartIsVisible = !state.cartIsVisible;
+    },
+    showNotification(state, action) {
+      state.notification = {
+        status: action.payload.status,
+        title: action.payload.title,
+        message: action.payload.message,
+      };
     },
   },
 });
