@@ -16,8 +16,8 @@ export default function Cart(props) {
               id: item.id,
               title: item.name,
               quantity: item.quantity,
-              total: item.totalPrice,
               price: item.price,
+              total: item.totalPrice,
             }}
           />
         ))}

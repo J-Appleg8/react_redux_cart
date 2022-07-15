@@ -4,7 +4,7 @@ import Cart from './components/Cart/Cart';
 import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
-import { uiActions } from './store/ui-slice';
+import { sendCartData, fetchCartData } from './store/cart-actions';
 
 let isInitial = true;
 
@@ -21,54 +21,23 @@ export default function App() {
   // -- useSelector automaticallly sets up subscription to redux store
   const cart = useSelector(state => state.cart);
 
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, [dispatch]);
+
   // use useEffect to listen for changes - runs whenever a dependency changes
   // PUT - will override existing data instead of storing new data in a list (POST)
   useEffect(() => {
-    const sendCartData = async () => {
-      dispatch(
-        uiActions.showNotification({
-          status: 'pending',
-          title: 'Sending',
-          message: 'Sending cart data',
-        })
-      );
-      const response = await fetch(
-        'https://react-http-d8501-default-rtdb.firebaseio.com/cart.json',
-        {
-          method: 'PUT',
-          body: JSON.stringify(cart),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Sending cart data failed');
-      }
-
-      const responseData = await response.json();
-
-      dispatch(
-        uiActions.showNotification({
-          status: 'success',
-          title: 'Success!',
-          message: 'Sent cart data successfully!',
-        })
-      );
-    };
-
     if (isInitial) {
       isInitial = false;
       return;
     }
-
-    sendCartData().catch(error => {
-      dispatch(
-        uiActions.showNotification({
-          status: 'error',
-          title: 'Error!',
-          message: 'Sending cart data failed!',
-        })
-      );
-    });
+    // When this is dispatched:
+    // -- redux will execute the sendCartData() function for us
+    // -- all our other actions will be dispatched & http request will be sent
+    if (cart.changed) {
+      dispatch(sendCartData(cart));
+    }
   }, [cart, dispatch]);
 
   return (
